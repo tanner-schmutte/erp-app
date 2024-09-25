@@ -6,7 +6,7 @@ function App() {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        fetch("http://localhost:3001/user", {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/user`, {
             credentials: "include",
         })
             .then((response) => {
@@ -22,11 +22,13 @@ function App() {
     }, []);
 
     const handleLogin = () => {
-        window.location.href = "http://localhost:3001/auth/procore";
+        window.location.href = `${
+            import.meta.env.VITE_BACKEND_URL
+        }/auth/procore`;
     };
 
     const handleLogout = () => {
-        fetch("http://localhost:3001/logout", {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/logout`, {
             method: "POST",
             credentials: "include",
         }).then(setUser(null));
