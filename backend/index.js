@@ -51,6 +51,7 @@ passport.use(
                     }
                 );
                 const user = response.data;
+                user.accessToken = accessToken;
                 return done(null, user); // Pass user data to session
             } catch (error) {
                 return done(error);
@@ -90,14 +91,13 @@ app.get("/user", (req, res) => {
     res.json(req.user); // Send user data to frontend
 });
 
-app.get("/logout", (req, res) => {
+app.post("/logout", (req, res) => {
     req.logout();
     req.session.destroy((err) => {
         if (err) {
             res.status(500).json({ message: "Error destroying session" });
         } else {
             res.clearCookie("connect.sid");
-            res.redirect(process.env.FRONTEND_URL);
         }
     });
 

@@ -22,11 +22,14 @@ function App() {
     }, []);
 
     const handleLogin = () => {
-        window.location.href = "http://localhost:3001/auth/procore"; // Redirect to backend
+        window.location.href = "http://localhost:3001/auth/procore";
     };
 
-    const handleLogout = async () => {
-        window.location.href = "http://localhost:3001/logout";
+    const handleLogout = () => {
+        fetch("http://localhost:3001/logout", {
+            method: "POST",
+            credentials: "include",
+        }).then(setUser(null));
     };
 
     return (
