@@ -2,29 +2,33 @@ import React, { useState, useEffect } from "react";
 import { FaGear } from "react-icons/fa6";
 import "./App.css";
 
-const Admin = ["tanner.schmutte@procore.com"];
-const Integration_Implementation_Specialists = ["chas.vermillion@procore.com"];
-const Integration_Support_Specialists = ["chairat.puengrod@procore.com"];
-
-// Admin, Super, Individual or something like that
-
 function App() {
     const [user, setUser] = useState(null);
 
-    useEffect(() => {
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/user`, {
-            credentials: "include",
-        })
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error("Not logged in");
-            })
-            .then((data) => {
+    console.log(user);
+
+    const fetchUser = async () => {
+        try {
+            const response = await fetch(
+                `${import.meta.env.VITE_BACKEND_URL}/user`,
+                { credentials: "include" }
+            );
+
+            const data = await response.json();
+
+            if (data.email) {
                 setUser(data);
-            })
-            .catch((error) => console.log(error));
+            } else {
+                setUser(null); // If user is unauthorized, set user to null
+            }
+        } catch (error) {
+            console.error("Error fetching user:", error);
+            setUser(null); // Handle error by clearing user state
+        }
+    };
+
+    useEffect(() => {
+        fetchUser(); // Fetch user data when component mounts
     }, []);
 
     const handleLogin = () => {
@@ -33,11 +37,19 @@ function App() {
         }/auth/procore`;
     };
 
-    const handleLogout = () => {
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/logout`, {
-            method: "POST",
-            credentials: "include",
-        }).then(setUser(null));
+    const handleLogout = async () => {
+        try {
+            await fetch(`${import.meta.env.VITE_BACKEND_URL}/logout`, {
+                method: "POST",
+                credentials: "include",
+            });
+
+            console.log("logging out...");
+
+            setUser(null);
+        } catch (error) {
+            console.error("Error during logout:", error);
+        }
     };
 
     return (
@@ -55,7 +67,7 @@ function App() {
             <div className="button-container">
                 {user ? (
                     <>
-                        <div className="welcome">Welcome, {user.login}</div>
+                        <div className="welcome">Welcome, {user.email}</div>
                         <button className="auth-button" onClick={handleLogout}>
                             Logout
                         </button>

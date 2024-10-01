@@ -6,6 +6,8 @@ const axios = require("axios");
 const cors = require("cors");
 require("dotenv").config();
 
+const db = require("./models");
+
 const app = express();
 
 // Enable CORS for requests from frontend
@@ -41,7 +43,6 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                // Fetch user info from Procore's API
                 const response = await axios.get(
                     "https://api.procore.com/rest/v1.0/me",
                     {
@@ -50,9 +51,29 @@ passport.use(
                         },
                     }
                 );
-                const user = response.data;
-                user.accessToken = accessToken;
-                return done(null, user); // Pass user data to session
+
+                const procoreUser = response.data;
+
+                // Check if user exists in the database
+                let user = await db.User.findOne({
+                    where: { email: procoreUser.login },
+                });
+
+                // If user doesn't exist, create a new user with no permissions
+                if (!user) {
+                    user = await db.User.create({
+                        email: procoreUser.login,
+                        role: "none", // Default role for new users
+                    });
+                }
+
+                // Attach the user's access token and role to the session
+                const userWithRole = {
+                    email: user.email,
+                    role: user.role,
+                    accessToken,
+                };
+                return done(null, userWithRole); // Pass user data (with role) to session
             } catch (error) {
                 return done(error);
             }
@@ -95,13 +116,32 @@ app.post("/logout", (req, res) => {
     req.logout();
     req.session.destroy((err) => {
         if (err) {
-            res.status(500).json({ message: "Error destroying session" });
+            return res.status(500).json({ message: "Error destroying session" });
         } else {
-            res.clearCookie("connect.sid");
+            return res.status(200).json({ message: "Logged out successfully" });
         }
     });
 
     console.log("Session data after logout: \n\n", req.session);
+});
+
+// Middleware to check if the user is an admin
+function isAdmin(req, res, next) {
+    if (req.user && req.user.role === "admin") {
+        return next();
+    } else {
+        return res.status(403).json({ message: "Forbidden" });
+    }
+}
+
+// Route to fetch all users (admin-only)
+app.get("/users", isAdmin, async (req, res) => {
+    try {
+        const users = await db.User.findAll(); // Fetch all users
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching users" });
+    }
 });
 
 // Start the backend server on port 3001
