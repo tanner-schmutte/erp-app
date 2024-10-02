@@ -9,7 +9,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <h3>Confirm Delete</h3>
+                <h2>Confirm Delete</h2>
                 <p>Are you sure you want to delete this user?</p>
                 <div className="modal-buttons">
                     <button onClick={onConfirm} className="confirm-button">
@@ -31,6 +31,8 @@ function App() {
     const [newUser, setNewUser] = useState({ email: "", role: "none" });
     const [isModalOpen, setModalOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
+
+    const roleOrder = { admin: 1, full: 2, limited: 3, none: 4 };
 
     useEffect(() => {
         fetchUser();
@@ -65,7 +67,6 @@ function App() {
             );
 
             const data = await response.json();
-            const roleOrder = { admin: 1, full: 2, limited: 3, none: 4 };
             const sortedUsers = data.sort(
                 (a, b) => roleOrder[a.role] - roleOrder[b.role]
             );
@@ -171,24 +172,30 @@ function App() {
     return (
         <>
             <div className="title">
-                <FaGear
-                    style={{
-                        color: "white",
-                        fontSize: "36px",
-                        paddingRight: "10px",
-                    }}
-                />
-                ERP App
+                <div className="title-content">
+                    <FaGear
+                        style={{
+                            color: "white",
+                            fontSize: "36px",
+                            paddingRight: "10px",
+                        }}
+                    />
+                    ERP App
+                </div>
+                {user && (
+                    <button className="logout-button" onClick={handleLogout}>
+                        Logout
+                    </button>
+                )}
             </div>
-            <div className="button-container">
+            <div className="content-container">
                 {user ? (
                     <>
                         <div className="welcome">Welcome, {user.email}</div>
-
                         {user.role === "admin" && (
                             <>
                                 <button
-                                    class="friendly"
+                                    class="friendly show"
                                     onClick={() => {
                                         setShowUsers(!showUsers);
                                         if (!showUsers) fetchUsers();
@@ -330,7 +337,7 @@ function App() {
                                             </select>
                                             <button
                                                 type="submit"
-                                                class="friendly"
+                                                class="friendly submit"
                                             >
                                                 Add User
                                             </button>
@@ -339,15 +346,36 @@ function App() {
                                 )}
                             </>
                         )}
-
-                        <button className="auth-button" onClick={handleLogout}>
-                            Logout
-                        </button>
+                        {roleOrder[user.role] < 4 && (
+                            <div className="menu">
+                                <h2>Process Menu</h2>
+                                <div className="menu-item">
+                                    <h3>
+                                        1. &emsp; Delete a Project's Direct
+                                        Costs
+                                    </h3>
+                                </div>
+                                <div className="menu-item">
+                                    <h3>2. &emsp; Sage 300: Unlink PCCOs</h3>
+                                </div>
+                                <div className="menu-item">
+                                    <h3>3. &emsp; Sage 300: Update Sub Jobs</h3>
+                                </div>
+                                <div className="menu-item">
+                                    <h3>4. &emsp; QBD: Sync Requisitions</h3>
+                                </div>
+                                <div className="menu-item">
+                                    <h3>5. &emsp; Yardi: Update Origin Data</h3>
+                                </div>
+                            </div>
+                        )}
                     </>
                 ) : (
-                    <button className="auth-button" onClick={handleLogin}>
-                        Login with Procore
-                    </button>
+                    <div className="login-container">
+                        <button className="login-button" onClick={handleLogin}>
+                            Login with Procore
+                        </button>
+                    </div>
                 )}
             </div>
 
