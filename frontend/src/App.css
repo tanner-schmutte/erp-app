@@ -29,6 +29,7 @@
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
+    margin-top: 90px;
 }
 
 .login-button:hover {
@@ -37,4 +38,104 @@
 
 .welcome {
     padding-bottom: 5%;
+}
+
+.friendly {
+    color: white;
+    font-weight: bold;
+    background-color: #2d9746;
+}
+
+table {
+    margin-top: 30px;
+    width: 67%;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 4px;
+    border-bottom: 1px solid #ddd;
+}
+
+input,
+select {
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    margin: 10px;
+}
+
+h4 {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.email-cell {
+    position: relative;
+}
+
+.delete-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    padding: 0px;
+    transform: translateY(-50%);
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.2s ease-in-out;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: red;
+    margin-right: 20px;
+}
+
+.email-cell:hover .delete-button {
+    opacity: 1;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    padding: 40px;
+    border-radius: 25px;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.confirm-button {
+    background-color: red;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.cancel-button {
+    background-color: gray;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
 }
