@@ -1,30 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { FaGear, FaTrash } from "react-icons/fa6";
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    Navigate,
+} from "react-router-dom";
 import "./App.css";
 
-// Modal Component
-const ConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
-    if (!isOpen) return null;
+import HomepageContent from "./Elements/HomepageContent";
+import ConfirmationModal from "./Elements/ConfirmationModal";
 
-    return (
-        <div className="modal-overlay">
-            <div className="modal">
-                <h2>Confirm Delete</h2>
-                <p>Are you sure you want to delete this user?</p>
-                <div className="modal-buttons">
-                    <button onClick={onConfirm} className="confirm-button">
-                        Yes
-                    </button>
-                    <button onClick={onClose} className="cancel-button">
-                        No
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
+import DeleteDirectCosts from "./Processes/DeleteDirectCosts";
+import UnlinkPCCOs from "./Processes/UnlinkPCCOs";
+import UpdateSubJobs from "./Processes/UpdateSubJobs";
+import SyncRequisitions from "./Processes/SyncRequisitions";
+import UpdateProjectOriginData from "./Processes/UpdateProjectOriginData";
 
-function App() {
+function ProtectedRoute({ user, roleOrder, requiredRole, children }) {
+    // Check if the user is authenticated and has a valid role
+    if (!user || roleOrder[user.role] > requiredRole) {
+        return <Navigate to="/" replace />;
+    }
+
+    return children;
+}
+
+export default function App() {
     const [user, setUser] = useState(null);
     const [users, setUsers] = useState([]);
     const [showUsers, setShowUsers] = useState(false);
@@ -120,7 +121,7 @@ function App() {
     };
 
     const handleAddUser = async (event) => {
-        event.preventDefault(); // Prevent form from refreshing the page
+        event.preventDefault();
         try {
             const response = await fetch(
                 `${import.meta.env.VITE_BACKEND_URL}/users`,
@@ -136,8 +137,8 @@ function App() {
 
             if (response.ok) {
                 const addedUser = await response.json();
-                setUsers([...users, addedUser]); // Add new user to the table
-                setNewUser({ email: "", role: "none" }); // Reset the form
+                setUsers([...users, addedUser]);
+                setNewUser({ email: "", role: "none" });
             } else {
                 console.error("Error adding user:", response.statusText);
             }
@@ -147,7 +148,6 @@ function App() {
     };
 
     const handleDeleteUser = (userId) => {
-        // Show the confirmation modal and store the user to delete
         setUserToDelete(userId);
         setModalOpen(true);
     };
@@ -162,230 +162,103 @@ function App() {
                 }
             );
 
-            setUsers(users.filter((user) => user.id !== userToDelete)); // Remove user from the list
-            setModalOpen(false); // Close the modal
+            setUsers(users.filter((user) => user.id !== userToDelete));
+            setModalOpen(false);
         } catch (error) {
             console.error("Error deleting user:", error);
         }
     };
 
     return (
-        <>
-            <div className="title">
-                <div className="title-content">
-                    <FaGear
-                        style={{
-                            color: "white",
-                            fontSize: "36px",
-                            paddingRight: "10px",
-                        }}
-                    />
-                    ERP App
-                </div>
-                {user && (
-                    <button className="logout-button" onClick={handleLogout}>
-                        Logout
-                    </button>
-                )}
-            </div>
-            <div className="content-container">
-                {user ? (
-                    <>
-                        <div className="welcome">Welcome, {user.email}</div>
-                        {user.role === "admin" && (
-                            <>
-                                <button
-                                    class="friendly show"
-                                    onClick={() => {
-                                        setShowUsers(!showUsers);
-                                        if (!showUsers) fetchUsers();
-                                    }}
-                                >
-                                    {showUsers ? "Hide Users" : "Show Users"}
-                                </button>
-
-                                {showUsers && (
-                                    <>
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th>Email</th>
-                                                    <th>Admin</th>
-                                                    <th>Full Access</th>
-                                                    <th>Limited Access</th>
-                                                    <th>None</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {users.map((user, index) => (
-                                                    <tr key={user.id}>
-                                                        <td>{index + 1}</td>
-                                                        <td className="email-cell">
-                                                            {user.email}
-                                                            <div
-                                                                className="delete-button"
-                                                                onClick={() =>
-                                                                    handleDeleteUser(
-                                                                        user.id
-                                                                    )
-                                                                }
-                                                            >
-                                                                <FaTrash />
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={
-                                                                    user.role ===
-                                                                    "admin"
-                                                                }
-                                                                onChange={() =>
-                                                                    handleRoleChange(
-                                                                        user.id,
-                                                                        "admin"
-                                                                    )
-                                                                }
-                                                            />
-                                                        </td>
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={
-                                                                    user.role ===
-                                                                    "full"
-                                                                }
-                                                                onChange={() =>
-                                                                    handleRoleChange(
-                                                                        user.id,
-                                                                        "full"
-                                                                    )
-                                                                }
-                                                            />
-                                                        </td>
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={
-                                                                    user.role ===
-                                                                    "limited"
-                                                                }
-                                                                onChange={() =>
-                                                                    handleRoleChange(
-                                                                        user.id,
-                                                                        "limited"
-                                                                    )
-                                                                }
-                                                            />
-                                                        </td>
-                                                        <td>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={
-                                                                    user.role ===
-                                                                    "none"
-                                                                }
-                                                                onChange={() =>
-                                                                    handleRoleChange(
-                                                                        user.id,
-                                                                        "none"
-                                                                    )
-                                                                }
-                                                            />
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-
-                                        <form onSubmit={handleAddUser}>
-                                            <h4>Add New User</h4>
-                                            <input
-                                                type="email"
-                                                value={newUser.email}
-                                                onChange={(e) =>
-                                                    setNewUser({
-                                                        ...newUser,
-                                                        email: e.target.value,
-                                                    })
-                                                }
-                                                placeholder="User email"
-                                                required
-                                            />
-                                            <select
-                                                value={newUser.role}
-                                                onChange={(e) =>
-                                                    setNewUser({
-                                                        ...newUser,
-                                                        role: e.target.value,
-                                                    })
-                                                }
-                                            >
-                                                <option value="admin">
-                                                    Admin
-                                                </option>
-                                                <option value="full">
-                                                    Full Access
-                                                </option>
-                                                <option value="limited">
-                                                    Limited Access
-                                                </option>
-                                                <option value="none">
-                                                    None
-                                                </option>
-                                            </select>
-                                            <button
-                                                type="submit"
-                                                class="friendly submit"
-                                            >
-                                                Add User
-                                            </button>
-                                        </form>
-                                    </>
-                                )}
-                            </>
-                        )}
-                        {roleOrder[user.role] < 4 && (
-                            <div className="menu">
-                                <h2>Process Menu</h2>
-                                <div className="menu-item">
-                                    <h3>
-                                        1. &emsp; Delete a Project's Direct
-                                        Costs
-                                    </h3>
-                                </div>
-                                <div className="menu-item">
-                                    <h3>2. &emsp; Sage 300: Unlink PCCOs</h3>
-                                </div>
-                                <div className="menu-item">
-                                    <h3>3. &emsp; Sage 300: Update Sub Jobs</h3>
-                                </div>
-                                <div className="menu-item">
-                                    <h3>4. &emsp; QBD: Sync Requisitions</h3>
-                                </div>
-                                <div className="menu-item">
-                                    <h3>5. &emsp; Yardi: Update Origin Data</h3>
-                                </div>
-                            </div>
-                        )}
-                    </>
-                ) : (
-                    <div className="login-container">
-                        <button className="login-button" onClick={handleLogin}>
-                            Login with Procore
-                        </button>
-                    </div>
-                )}
-            </div>
-
+        <Router>
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <HomepageContent
+                            user={user}
+                            users={users}
+                            fetchUsers={fetchUsers}
+                            handleLogin={handleLogin}
+                            handleLogout={handleLogout}
+                            handleAddUser={handleAddUser}
+                            handleRoleChange={handleRoleChange}
+                            handleDeleteUser={handleDeleteUser}
+                            setShowUsers={setShowUsers}
+                            showUsers={showUsers}
+                            newUser={newUser}
+                            setNewUser={setNewUser}
+                            roleOrder={roleOrder}
+                        />
+                    }
+                />
+                <Route
+                    path="/delete_direct_costs"
+                    element={
+                        <ProtectedRoute
+                            user={user}
+                            roleOrder={roleOrder}
+                            requiredRole={3}
+                        >
+                            <DeleteDirectCosts />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/unlink_pccos"
+                    element={
+                        <ProtectedRoute
+                            user={user}
+                            roleOrder={roleOrder}
+                            requiredRole={2}
+                        >
+                            <UnlinkPCCOs />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/update_sub_jobs"
+                    element={
+                        <ProtectedRoute
+                            user={user}
+                            roleOrder={roleOrder}
+                            requiredRole={3}
+                        >
+                            <UpdateSubJobs />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/sync_requisitions"
+                    element={
+                        <ProtectedRoute
+                            user={user}
+                            roleOrder={roleOrder}
+                            requiredRole={3}
+                        >
+                            <SyncRequisitions />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/update_project_origin_data"
+                    element={
+                        <ProtectedRoute
+                            user={user}
+                            roleOrder={roleOrder}
+                            requiredRole={3}
+                        >
+                            <UpdateProjectOriginData />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
             <ConfirmationModal
                 isOpen={isModalOpen}
                 onClose={() => setModalOpen(false)}
                 onConfirm={confirmDeleteUser}
             />
-        </>
+        </Router>
     );
 }
-
-export default App;
