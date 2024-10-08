@@ -162,6 +162,13 @@ h4 {
     font-weight: bold;
 }
 
+.menu-item:hover {
+    cursor: pointer;
+    color: #ff5200;
+    background-color: #ffebea;
+    border-radius: 15px;
+}
+
 .run-process-container {
     display: flex;
     justify-content: center;
@@ -181,11 +188,9 @@ h4 {
     background-color: #e04800;
 }
 
-.menu-item:hover {
-    cursor: pointer;
-    color: #ff5200;
-    background-color: #ffebea;
-    border-radius: 15px;
+.run-process-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6; /* Optional: To visually indicate that it is disabled */
 }
 
 .disabled {
@@ -238,6 +243,7 @@ h4 {
     border-radius: 25px;
     box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
     text-align: center;
+    width: 303px;
 }
 
 .modal-buttons {
@@ -246,6 +252,7 @@ h4 {
 }
 
 .confirm-run {
+    margin-top: 30px;
     background-color: #ff5200;
     color: white;
     font-weight: bold;
@@ -276,6 +283,37 @@ h4 {
     border-radius: 15px;
     cursor: pointer;
     margin-top: 20px;
+}
+
+.progress-bar-container {
+    width: 50%;
+    background-color: white;
+    margin-top: 20px;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+    height: 50px;
+    background-color: #2d9746;
+    width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.completion-link {
+    margin-top: 30px;
+    color: #1e4692;
+    font-weight: bold;
+}
+
+.completion-link:hover {
+    color: #ff5200;
+    text-decoration: underline;
 }
 
 @media (max-width: 1100px) {
