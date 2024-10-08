@@ -227,6 +227,81 @@ app.delete("/users/:id", async (req, res) => {
     }
 });
 
+app.get("/project", async (req, res) => {
+    const { companyId, projectId } = req.query;
+
+    console.log("\n\ngetting project\n\n");
+
+    try {
+        const response = await axios.get(
+            `https://api.procore.com/rest/v1.0/projects/${projectId}?company_id=${companyId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${req.user.accessToken}`,
+                    "Procore-Company-Id": companyId,
+                },
+            }
+        );
+
+        res.json(response.data);
+    } catch (error) {
+        console.error("Error getting project", error);
+        res.status(500).json({ message: "Failed to show project." });
+    }
+});
+
+app.get("/direct_costs", async (req, res) => {
+    const { companyId, projectId } = req.query;
+
+    console.log("\n\ngetting direct costs\n\n");
+
+    try {
+        const response = await axios.get(
+            `https://api.procore.com/rest/v1.0/projects/${projectId}/direct_costs`,
+            {
+                headers: {
+                    Authorization: `Bearer ${req.user.accessToken}`,
+                    "Procore-Company-Id": companyId,
+                },
+            }
+        );
+
+        res.json(response.data);
+    } catch (error) {
+        console.error("Error fetching direct costs from Procore:", error);
+        res.status(500).json({ message: "Failed to fetch direct costs." });
+    }
+});
+
+app.post("/delete_direct_cost", async (req, res) => {
+    console.log("\n\ndeleting direct cost\n\n");
+    console.log(req.body);
+    console.log("\n\n");
+
+    const { companyId, projectId, directCostId } = req.body;
+
+    try {
+        await axios.delete(
+            `https://api.procore.com/rest/v1.0/projects/${projectId}/direct_costs/${directCostId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${req.user.accessToken}`,
+                    "Procore-Company-Id": companyId,
+                },
+            }
+        );
+
+        res.status(200).json({
+            message: "Direct cost item deleted successfully.",
+        });
+    } catch (error) {
+        console.error("Error deleting direct cost:", error.status);
+        res.status(500).json({
+            message: "Failed to delete some or all direct cost items.",
+        });
+    }
+});
+
 // Start the backend server on port 3001
 app.listen(3001, () => {
     console.log("Backend running on http://localhost:3001");
