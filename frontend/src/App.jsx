@@ -8,7 +8,7 @@ import {
 import "./App.css";
 
 import HomepageContent from "./Elements/HomepageContent";
-import ConfirmationModal from "./Elements/ConfirmationModal";
+import ConfirmDeleteModal from "./Elements/ConfirmDeleteModal";
 
 import DeleteDirectCosts from "./Processes/DeleteDirectCosts";
 import UnlinkPCCOs from "./Processes/UnlinkPCCOs";
@@ -254,7 +254,7 @@ export default function App() {
                 />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-            <ConfirmationModal
+            <ConfirmDeleteModal
                 isOpen={isModalOpen}
                 onClose={() => setModalOpen(false)}
                 onConfirm={confirmDeleteUser}

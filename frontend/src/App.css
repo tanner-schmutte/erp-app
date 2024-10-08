@@ -145,12 +145,40 @@ h4 {
     font-weight: bold;
 }
 
+.menu-input {
+    padding: 5px;
+    border-radius: 5px;
+    border: 2px;
+    margin-right: 5px;
+    margin-left: 5px;
+    background-color: #f5f5f5;
+}
+
 .item-name {
     margin-left: 20%;
     font-size: 16px;
     margin-bottom: 10px;
     font-style: italic;
     font-weight: bold;
+}
+
+.run-process-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.run-process-button {
+    font-size: 16px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    background-color: #ff5200;
+    color: white;
+    border-radius: 15px;
+}
+
+.run-process-button:hover {
+    background-color: #e04800;
 }
 
 .menu-item:hover {
@@ -217,14 +245,26 @@ h4 {
     flex-direction: column;
 }
 
-.confirm-button {
+.confirm-run {
+    background-color: #ff5200;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 15px;
+}
+
+.confirm-run:hover {
+    background-color: #e04800;
+}
+
+.confirm-delete {
     background-color: #e95760;
     color: white;
     font-weight: bold;
     padding: 10px 20px;
     border: none;
     border-radius: 15px;
-    cursor: pointer;
 }
 
 .cancel-button {

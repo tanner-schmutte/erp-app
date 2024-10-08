@@ -1,4 +1,4 @@
-export default function ConfirmationModal({ isOpen, onClose, onConfirm }) {
+export default function ConfirmDeleteModal({ isOpen, onClose, onConfirm }) {
     if (!isOpen) return null;
 
     return (
@@ -7,7 +7,7 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm }) {
                 <h2>Confirm Delete</h2>
                 <p>Are you sure you want to delete this user?</p>
                 <div className="modal-buttons">
-                    <button onClick={onConfirm} className="confirm-button">
+                    <button onClick={onConfirm} className="confirm-delete">
                         Yes
                     </button>
                     <button onClick={onClose} className="cancel-button">
