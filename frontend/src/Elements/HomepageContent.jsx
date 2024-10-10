@@ -201,7 +201,7 @@ export default function HomepageContent({
                             <div className="menu">
                                 <h2 className="menu-title">Process Menu</h2>
 
-                                <ol>
+                                <ul>
                                     <div
                                         className="menu-item"
                                         onClick={() =>
@@ -260,7 +260,7 @@ export default function HomepageContent({
                                             Yardi: Update Project Origin Data
                                         </li>
                                     </div>
-                                </ol>
+                                </ul>
                             </div>
                         )}
                     </>
