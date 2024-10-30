@@ -11,22 +11,27 @@ export default function DeleteDirectCosts() {
     const [progress, setProgress] = useState(0);
     const [projectName, setProjectName] = useState("");
     const [companyName, setCompanyName] = useState("");
+    const [error, setError] = useState("");
 
     // Fetch project and company name
     const fetchProject = async () => {
-        try {
-            const response = await fetch(
-                `${
-                    import.meta.env.VITE_BACKEND_URL
-                }/project?companyId=${companyId}&projectId=${projectId}`,
-                { credentials: "include" }
+        const response = await fetch(
+            `${
+                import.meta.env.VITE_BACKEND_URL
+            }/project?companyId=${companyId}&projectId=${projectId}`,
+            { credentials: "include" }
+        );
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(
+                `${response.status} ${errorData.message || response.statusText}`
             );
-            const data = await response.json();
-            setProjectName(data.name);
-            setCompanyName(data.company.name);
-        } catch (error) {
-            console.error("Error fetching project details:", error);
         }
+
+        const data = await response.json();
+        setProjectName(data.name);
+        setCompanyName(data.company.name);
     };
 
     // Fetch all direct costs for the project
@@ -87,8 +92,13 @@ export default function DeleteDirectCosts() {
 
     // Open confirmation modal and fetch project details
     const handleOpenModal = async () => {
-        await fetchProject();
-        setModalOpen(true);
+        try {
+            await fetchProject();
+            setError("");
+            setModalOpen(true); // Only opens if fetchProject succeeds
+        } catch (error) {
+            setError(error.message); // Sets the error without opening modal
+        }
     };
 
     const runProcess = async () => {
@@ -131,12 +141,14 @@ export default function DeleteDirectCosts() {
                         <button
                             className="run-process-button"
                             onClick={handleOpenModal}
-                            disabled={isDeleting}
+                            disabled={isDeleting || !companyId || !projectId}
                         >
                             Delete Direct Costs
                         </button>
                     </div>
                 </div>
+
+                {error && <div className="menu error">{error}</div>}
 
                 {isDeleting && (
                     <div className="progress-bar-container">
