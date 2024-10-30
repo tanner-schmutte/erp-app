@@ -19,6 +19,7 @@ module.exports = {
                 type: Sequelize.STRING,
             },
             companyId: {
+                allowNull: false,
                 type: Sequelize.INTEGER,
             },
             itemType: {
