@@ -55,13 +55,10 @@ export default function DeleteDirectCosts() {
     // Delete each direct cost item
     const deleteDirectCosts = async (directCosts) => {
         setDeleting(true);
-        setProgress(0);
 
         const totalItems = directCosts.length;
         let completed = 0;
-
-        console.log("Company ID:", companyId);
-        console.log("we should be deleting", directCosts);
+        let success = true;
 
         try {
             for (const directCost of directCosts) {
@@ -87,6 +84,30 @@ export default function DeleteDirectCosts() {
         } catch (error) {
             console.error("Error deleting direct costs:", error);
             alert("Failed to delete some or all direct costs.");
+        } finally {
+            await logProcess(success ? "success" : "failed");
+        }
+    };
+
+    const logProcess = async (status) => {
+        try {
+            await fetch(`${import.meta.env.VITE_BACKEND_URL}/log`, {
+                credentials: "include",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    process: "Delete Direct Costs",
+                    companyId,
+                    itemType: "project",
+                    itemId: projectId,
+                    status: status,
+                    error: "",
+                }),
+            });
+        } catch (error) {
+            console.error("Error logging process:", error);
         }
     };
 
