@@ -12,9 +12,9 @@ module.exports = (sequelize, DataTypes) => {
         {
             user: DataTypes.INTEGER,
             process: DataTypes.STRING,
-            companyID: DataTypes.INTEGER,
+            companyId: DataTypes.STRING,
             itemType: DataTypes.STRING,
-            itemId: DataTypes.INTEGER,
+            itemId: DataTypes.STRING,
             status: DataTypes.STRING,
             error: DataTypes.STRING,
         },

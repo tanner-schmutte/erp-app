@@ -20,7 +20,7 @@ module.exports = {
             },
             companyId: {
                 allowNull: false,
-                type: Sequelize.INTEGER,
+                type: Sequelize.STRING,
             },
             itemType: {
                 allowNull: false,
@@ -28,14 +28,13 @@ module.exports = {
             },
             itemId: {
                 allowNull: false,
-                type: Sequelize.INTEGER,
+                type: Sequelize.STRING,
             },
             status: {
                 allowNull: false,
                 type: Sequelize.STRING,
             },
             error: {
-                allowNull: false,
                 type: Sequelize.STRING,
             },
             createdAt: {
