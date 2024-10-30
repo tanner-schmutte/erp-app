@@ -137,6 +137,12 @@ h4 {
     padding: 20px;
 }
 
+.menu.error {
+    color: #e95760;
+    font-weight: bold;
+    text-align: center;
+}
+
 .menu-title {
     font-size: 26px;
     color: black;
