@@ -92,9 +92,9 @@ export default function DeleteDirectCosts() {
 
     // Open confirmation modal and fetch project details
     const handleOpenModal = async () => {
+        setError("");
         try {
             await fetchProject();
-            setError("");
             setModalOpen(true); // Only opens if fetchProject succeeds
         } catch (error) {
             setError(error.message); // Sets the error without opening modal
