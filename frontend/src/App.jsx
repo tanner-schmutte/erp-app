@@ -10,6 +10,7 @@ import "./App.css";
 import HomepageContent from "./Elements/HomepageContent";
 import DeleteUserModal from "./Elements/DeleteUserModal";
 
+import GetLogs from "./Processes/GetLogs";
 import DeleteDirectCosts from "./Processes/DeleteDirectCosts";
 import UnlinkPCCOs from "./Processes/UnlinkPCCOs";
 import UpdateSubJobs from "./Processes/UpdateSubJobs";
@@ -17,12 +18,7 @@ import SyncRequisitions from "./Processes/SyncRequisitions";
 import UpdateProjectOriginData from "./Processes/UpdateProjectOriginData";
 
 function ProtectedRoute({ user, roleOrder, requiredRole, children }) {
-    // Check if the user is authenticated and has a valid role
-    if (!user || roleOrder[user.role] > requiredRole) {
-        return <Navigate to="/" replace />;
-    }
-
-    return children;
+    return <Navigate to="/" replace />;
 }
 
 export default function App() {
@@ -192,6 +188,7 @@ export default function App() {
                         />
                     }
                 />
+                <Route path="/logs" element={<GetLogs />} />
                 <Route
                     path="/delete_direct_costs"
                     element={
