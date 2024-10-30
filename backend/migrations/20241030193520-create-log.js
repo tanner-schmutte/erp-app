@@ -18,11 +18,24 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.STRING,
             },
+            companyId: {
+                type: Sequelize.INTEGER,
+            },
             itemType: {
+                allowNull: false,
                 type: Sequelize.STRING,
             },
             itemId: {
+                allowNull: false,
                 type: Sequelize.INTEGER,
+            },
+            status: {
+                allowNull: false,
+                type: Sequelize.STRING,
+            },
+            error: {
+                allowNull: false,
+                type: Sequelize.STRING,
             },
             createdAt: {
                 allowNull: false,
