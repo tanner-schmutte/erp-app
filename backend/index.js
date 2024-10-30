@@ -71,6 +71,7 @@ passport.use(
 
                 // Attach the user's access token and role to the session
                 const userWithRole = {
+                    id: user.id,
                     email: user.email,
                     role: user.role,
                     accessToken,
@@ -302,6 +303,45 @@ app.post("/delete_direct_cost", async (req, res) => {
         res.status(500).json({
             message: "Failed to delete some or all direct cost items.",
         });
+    }
+});
+
+app.get("/logs", async (req, res) => {
+    try {
+        const logs = await db.Log.findAll({
+            include: [
+                {
+                    model: db.User,
+                    attributes: ["email"],
+                },
+            ],
+            order: [["createdAt", "DESC"]],
+        });
+        res.status(200).json(logs);
+    } catch (error) {
+        console.error("Error fetching logs:", error);
+        res.status(500).json({ message: "Failed to fetch logs." });
+    }
+});
+
+app.post("/log", async (req, res) => {
+    const { process, companyId, itemType, itemId, status, error } = req.body;
+
+    try {
+        await db.Log.create({
+            user: req.user.id,
+            process,
+            companyId,
+            itemType,
+            itemId,
+            status,
+            error,
+        });
+
+        res.status(201).json({ message: "Process log created successfully" });
+    } catch (error) {
+        console.error("Error creating process log:", error);
+        res.status(500).json({ message: "Failed to create process log" });
     }
 });
 
