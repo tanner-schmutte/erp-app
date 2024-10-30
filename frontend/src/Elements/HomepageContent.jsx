@@ -23,6 +23,14 @@ export default function HomepageContent({
     return (
         <>
             <div className="title">
+                {user && (
+                    <button
+                        className="process-logs-button"
+                        onClick={() => navigate("/logs")}
+                    >
+                        Process Logs
+                    </button>
+                )}
                 <div className="title-content">
                     <FaGear
                         style={{
@@ -211,7 +219,6 @@ export default function HomepageContent({
                                         <li className="item-name">
                                             Delete a Project's Direct Costs
                                         </li>
-                                        
                                     </div>
                                     <div
                                         className={`menu-item ${
