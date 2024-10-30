@@ -245,8 +245,11 @@ app.get("/project", async (req, res) => {
 
         res.json(response.data);
     } catch (error) {
-        console.error("Error getting project", error);
-        res.status(500).json({ message: "Failed to show project." });
+        console.log(error.response.status, error.response.data.message);
+
+        res.status(error.response.status).json({
+            message: error.response.data.message,
+        });
     }
 });
 
