@@ -211,6 +211,18 @@ export default function HomepageContent({
                                         <li className="item-name">
                                             Delete a Project's Direct Costs
                                         </li>
+                                        
+                                    </div>
+                                    <div
+                                        className={`menu-item ${
+                                            roleOrder[user.role] > 2
+                                                ? "disabled"
+                                                : ""
+                                        }`}
+                                    >
+                                        <li className="item-name">
+                                            Get / Update External Data
+                                        </li>
                                     </div>
                                     <div
                                         className={`menu-item ${
