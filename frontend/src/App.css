@@ -70,6 +70,19 @@
     background-color: #e04800;
 }
 
+.process-logs-button {
+    position: absolute;
+    left: 20px;
+    background-color: #2d9746;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
 .back-button {
     position: absolute;
     left: 30px;
