@@ -18,7 +18,10 @@ import SyncRequisitions from "./Processes/SyncRequisitions";
 import UpdateProjectOriginData from "./Processes/UpdateProjectOriginData";
 
 function ProtectedRoute({ user, roleOrder, requiredRole, children }) {
-    return <Navigate to="/" replace />;
+    if (!user || roleOrder[user.role] > requiredRole) {
+        return <Navigate to="/" replace />;
+    }
+    return children;
 }
 
 export default function App() {
