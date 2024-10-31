@@ -100,7 +100,7 @@ export default function DeleteDirectCosts() {
                 body: JSON.stringify({
                     process: "Delete Direct Costs",
                     companyId,
-                    itemType: "project",
+                    itemType: "Project",
                     itemId: projectId,
                     status: status,
                     error: "",
