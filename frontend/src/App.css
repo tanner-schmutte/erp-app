@@ -90,6 +90,10 @@
     cursor: pointer;
 }
 
+.process-logs-button:hover {
+    background-color: #267d3a;
+}
+
 .back-button {
     position: absolute;
     left: 30px;
@@ -106,6 +110,10 @@
     font-weight: bold;
     background-color: #2d9746;
     border-radius: 15px;
+}
+
+.friendly:hover {
+    background-color: #267d3a;
 }
 
 .friendly.show {
