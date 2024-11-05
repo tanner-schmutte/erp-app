@@ -261,7 +261,7 @@ app.get("/direct_costs", async (req, res) => {
 
     try {
         const response = await axios.get(
-            `https://api.procore.com/rest/v1.0/projects/${projectId}/direct_costs`,
+            `https://api.procore.com/rest/v1.0/projects/${projectId}/direct_costs/line_items`,
             {
                 headers: {
                     Authorization: `Bearer ${req.user.accessToken}`,
