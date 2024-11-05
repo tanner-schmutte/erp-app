@@ -309,6 +309,31 @@ app.post("/delete_direct_cost", async (req, res) => {
     }
 });
 
+app.delete("/external_data", async (req, res) => {
+    const { companyId, item_type, item_ids } = req.body;
+
+    try {
+        await axios.delete(
+            `https://api.procore.com/rest/v1.0/companies/${company_id}/external_data/bulk_destroy`,
+            {
+                headers: {
+                    Authorization: `Bearer ${req.user.accessToken}`,
+                    "Procore-Company-Id": companyId,
+                },
+                body: JSON.stringify({
+                    item_type,
+                    item_ids,
+                }),
+            }
+        );
+    } catch (error) {
+        console.error("Error deleting direct cost:", error.status);
+        res.status(500).json({
+            message: "Failed to delete some or all external data.",
+        });
+    }
+});
+
 app.get("/logs", async (req, res) => {
     try {
         const logs = await db.Log.findAll({
