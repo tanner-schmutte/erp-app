@@ -278,14 +278,14 @@ app.get("/direct_costs", async (req, res) => {
 });
 
 app.post("/delete_direct_cost", async (req, res) => {
-    console.log("\n\ndeleting direct cost\n\n");
+    console.log("\n\ndeleting direct costs\n\n");
     console.log(req.body);
     console.log("\n\n");
 
     const { companyId, projectId, directCosts } = req.body;
 
     try {
-        await axios.delete(
+        await axios.post(
             `https://api.procore.com/rest/v1.0/projects/${projectId}/direct_costs/bulk_delete`,
             {
                 headers: {
@@ -299,10 +299,10 @@ app.post("/delete_direct_cost", async (req, res) => {
         );
 
         res.status(200).json({
-            message: "Direct cost item deleted successfully.",
+            message: "Direct cost items deleted successfully.",
         });
     } catch (error) {
-        console.error("Error deleting direct cost:", error.status);
+        console.error("Error deleting direct costs:", error.status);
         res.status(500).json({
             message: "Failed to delete some or all direct cost items.",
         });
