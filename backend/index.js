@@ -282,16 +282,19 @@ app.post("/delete_direct_cost", async (req, res) => {
     console.log(req.body);
     console.log("\n\n");
 
-    const { companyId, projectId, directCostId } = req.body;
+    const { companyId, projectId, directCosts } = req.body;
 
     try {
         await axios.delete(
-            `https://api.procore.com/rest/v1.0/projects/${projectId}/direct_costs/${directCostId}`,
+            `https://api.procore.com/rest/v1.0/projects/${projectId}/direct_costs/bulk_delete`,
             {
                 headers: {
                     Authorization: `Bearer ${req.user.accessToken}`,
                     "Procore-Company-Id": companyId,
                 },
+                body: JSON.stringify({
+                    directCosts,
+                }),
             }
         );
 
