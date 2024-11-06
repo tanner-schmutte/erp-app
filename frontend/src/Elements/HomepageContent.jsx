@@ -208,7 +208,6 @@ export default function HomepageContent({
                         {roleOrder[user.role] < 4 && (
                             <div className="menu">
                                 <h2 className="menu-title">Process Menu</h2>
-
                                 <ul>
                                     <div
                                         className="menu-item"
@@ -280,6 +279,7 @@ export default function HomepageContent({
                                         </li>
                                     </div>
                                 </ul>
+                                <br />
                             </div>
                         )}
                     </>
