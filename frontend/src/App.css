@@ -371,7 +371,9 @@ h4 {
     }
 
     .login-button,
-    .logout-button {
+    .logout-button,
+    .friendly,
+    .process-logs-button {
         padding: 10px 20px;
         font-size: 16px;
     }
@@ -401,7 +403,8 @@ h4 {
 
     .login-button,
     .logout-button,
-    .friendly {
+    .friendly,
+    .process-logs-button {
         padding: 8px 16px;
         font-size: 12px;
     }
