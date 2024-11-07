@@ -191,7 +191,18 @@ export default function App() {
                         />
                     }
                 />
-                <Route path="/logs" element={<GetLogs />} />
+                <Route
+                    path="/logs"
+                    element={
+                        <ProtectedRoute
+                            user={user}
+                            roleOrder={roleOrder}
+                            requiredRole={3}
+                        >
+                            <GetLogs />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route
                     path="/delete_direct_costs"
                     element={
