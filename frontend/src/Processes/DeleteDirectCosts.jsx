@@ -8,6 +8,7 @@ export default function DeleteDirectCosts() {
     const [projectId, setProjectId] = useState("");
     const [isModalOpen, setModalOpen] = useState(false);
     const [isDeleting, setDeleting] = useState(false);
+    const [completed, setCompleted] = useState(0);
     const [progress, setProgress] = useState(0);
     const [projectName, setProjectName] = useState("");
     const [companyName, setCompanyName] = useState("");
@@ -44,24 +45,74 @@ export default function DeleteDirectCosts() {
                 { credentials: "include" }
             );
             const data = await response.json();
-            console.log("Fetched Direct Costs:", data);
-            return data;
+
+            const totalCalls =
+                2 * Math.ceil(data.length / 100) +
+                Math.ceil(data.length / 1000);
+
+            console.log("Total Calls:", totalCalls);
+
+            return { data, totalCalls };
         } catch (error) {
             console.error("Error fetching direct costs:", error);
-            return [];
+            setError(error.message);
+        }
+    };
+
+    const chunkArray = (array, size) => {
+        const result = [];
+        for (let i = 0; i < array.length; i += size) {
+            result.push(array.slice(i, i + size));
+        }
+        return result;
+    };
+
+    const deleteExternalData = async (directCosts, item_type, totalCalls) => {
+        const ids =
+            item_type === "line_item"
+                ? directCosts.map((directCost) => directCost.id)
+                : directCosts.map((directCost) => directCost.holder.id);
+
+        const batches = chunkArray(ids, 100); // Split into batches of 100
+
+        try {
+            for (const batch of batches) {
+                await fetch(
+                    `${import.meta.env.VITE_BACKEND_URL}/external_data`,
+                    {
+                        credentials: "include",
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            companyId,
+                            item_type,
+                            item_ids: batch,
+                        }),
+                    }
+                );
+                setCompleted((prevCompleted) => {
+                    const newCompleted = prevCompleted + 1;
+                    setProgress(((newCompleted / totalCalls) * 100).toFixed(0));
+                    return newCompleted;
+                });
+            }
+        } catch (error) {
+            console.error("Error deleting external data:", error);
+            setError(error.message);
+            logProcess("failed", error);
         }
     };
 
     // Delete each direct cost item
-    const deleteDirectCosts = async (directCosts) => {
-        setDeleting(true);
+    const deleteDirectCosts = async (directCosts, totalCalls) => {
+        const ids = directCosts.map((directCost) => directCost.holder.id);
 
-        const totalItems = directCosts.length;
-        let completed = 0;
-        let success = true;
+        const batches = chunkArray(ids, 1000); // Split into batches of 1000
 
         try {
-            for (const directCost of directCosts) {
+            for (const batch of batches) {
                 await fetch(
                     `${import.meta.env.VITE_BACKEND_URL}/delete_direct_cost`,
                     {
@@ -73,23 +124,25 @@ export default function DeleteDirectCosts() {
                         body: JSON.stringify({
                             companyId,
                             projectId,
-                            directCostId: directCost.id,
+                            ids: batch,
                         }),
                     }
                 );
-
-                completed += 1;
-                setProgress(((completed / totalItems) * 100).toFixed(0));
             }
+
+            setCompleted((prevCompleted) => {
+                const newCompleted = prevCompleted + 1;
+                setProgress(((newCompleted / totalCalls) * 100).toFixed(0));
+                return newCompleted;
+            });
         } catch (error) {
             console.error("Error deleting direct costs:", error);
-            alert("Failed to delete some or all direct costs.");
-        } finally {
-            await logProcess(success ? "success" : "failed");
+            setError(error.message);
+            logProcess("failed", error);
         }
     };
 
-    const logProcess = async (status) => {
+    const logProcess = async (status, error) => {
         try {
             await fetch(`${import.meta.env.VITE_BACKEND_URL}/log`, {
                 credentials: "include",
@@ -103,7 +156,7 @@ export default function DeleteDirectCosts() {
                     itemType: "Project",
                     itemId: projectId,
                     status: status,
-                    error: "",
+                    error: error,
                 }),
             });
         } catch (error) {
@@ -124,19 +177,32 @@ export default function DeleteDirectCosts() {
 
     const runProcess = async () => {
         setModalOpen(false);
-        const fetchedDirectCosts = await fetchDirectCosts();
-        await deleteDirectCosts(fetchedDirectCosts);
+        setError("");
+
+        const result = await fetchDirectCosts();
+
+        const { data: fetchedDirectCosts, totalCalls } = result;
+
+        setDeleting(true);
+
+        await deleteExternalData(fetchedDirectCosts, "item", totalCalls);
+        await deleteExternalData(fetchedDirectCosts, "line_item", totalCalls);
+        await deleteDirectCosts(fetchedDirectCosts, totalCalls);
+
+        logProcess("success", "");
     };
 
     return (
         <>
+            {console.log("Completed:", completed)}
+            {console.log("Progress:", progress)}
             <Banner />
             <div className="content-container">
                 <div className="menu">
                     <h2 className="menu-title">
                         Delete a Project's Direct Costs
                     </h2>
-                    <div className="item-name">
+                    <div className="item-name center">
                         <label>Company ID:</label>
                         <input
                             type="text"
@@ -147,7 +213,7 @@ export default function DeleteDirectCosts() {
                             disabled={isDeleting}
                         />
                     </div>
-                    <div className="item-name">
+                    <div className="item-name center">
                         <label>Project ID:</label>
                         <input
                             type="text"
@@ -182,7 +248,7 @@ export default function DeleteDirectCosts() {
                     </div>
                 )}
 
-                {progress == 100 && (
+                {progress >= 100 && (
                     <a
                         href={`https://${
                             projectId.length === 15 ? "us02" : "app"
