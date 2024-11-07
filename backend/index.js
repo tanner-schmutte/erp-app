@@ -272,8 +272,11 @@ app.get("/direct_costs", async (req, res) => {
 
         res.json(response.data);
     } catch (error) {
-        console.error("Error fetching direct costs from Procore:", error);
-        res.status(500).json({ message: "Failed to fetch direct costs." });
+        console.log(error.response.status, error.response.data.message);
+
+        res.status(error.response.status).json({
+            message: error.response.data.message,
+        });
     }
 });
 
@@ -282,42 +285,58 @@ app.post("/delete_direct_cost", async (req, res) => {
     console.log(req.body);
     console.log("\n\n");
 
-    const { companyId, projectId, directCosts } = req.body;
+    const { companyId, projectId, ids } = req.body;
 
     try {
-        await axios.post(
+        const response = await fetch(
             `https://api.procore.com/rest/v1.0/projects/${projectId}/direct_costs/bulk_delete`,
             {
+                method: "POST",
                 headers: {
                     Authorization: `Bearer ${req.user.accessToken}`,
+                    "Content-Type": "application/json",
                     "Procore-Company-Id": companyId,
                 },
                 body: JSON.stringify({
-                    directCosts,
+                    ids,
                 }),
             }
         );
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(
+                `${response.status} ${errorData.message || response.statusText}`
+            );
+        }
 
         res.status(200).json({
             message: "Direct cost items deleted successfully.",
         });
     } catch (error) {
-        console.error("Error deleting direct costs:", error.status);
+        console.error("Error deleting direct costs:", error);
+
         res.status(500).json({
-            message: "Failed to delete some or all direct cost items.",
+            message: error.message || "Failed to delete direct costs.",
         });
     }
 });
 
 app.delete("/external_data", async (req, res) => {
+    console.log("\n\ndeleting external data\n\n");
+    console.log(req.body);
+    console.log("\n\n");
+
     const { companyId, item_type, item_ids } = req.body;
 
     try {
-        await axios.delete(
-            `https://api.procore.com/rest/v1.0/companies/${company_id}/external_data/bulk_destroy`,
+        const response = await fetch(
+            `https://api.procore.com/rest/v1.0/companies/${companyId}/external_data/bulk_destroy`,
             {
+                method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${req.user.accessToken}`,
+                    "Content-Type": "application/json",
                     "Procore-Company-Id": companyId,
                 },
                 body: JSON.stringify({
@@ -326,11 +345,17 @@ app.delete("/external_data", async (req, res) => {
                 }),
             }
         );
+
+        if (!response.ok) {
+            throw new Error(
+                `Failed to delete external data: ${response.status} ${response.statusText}`
+            );
+        }
+
+        res.status(204).send(); // No content
     } catch (error) {
-        console.error("Error deleting direct cost:", error.status);
-        res.status(500).json({
-            message: "Failed to delete some or all external data.",
-        });
+        console.error("Error deleting external data:", error);
+        res.status(500).json({ message: "Failed to delete external data" });
     }
 });
 
@@ -347,8 +372,11 @@ app.get("/logs", async (req, res) => {
         });
         res.status(200).json(logs);
     } catch (error) {
-        console.error("Error fetching logs:", error);
-        res.status(500).json({ message: "Failed to fetch logs." });
+        console.log(error.response.status, error.response.data.message);
+
+        res.status(error.response.status).json({
+            message: error.response.data.message,
+        });
     }
 });
 
