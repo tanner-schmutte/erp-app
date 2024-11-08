@@ -198,6 +198,21 @@ export default function UpdateProjectOriginData() {
                     </div>
                 )}
 
+                {progress >= 100 && (
+                    <a
+                        href={`https://${
+                            projectId.length === 15 ? "us02" : "app"
+                        }.procore.com/${projectId}/project/home`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="completion-link"
+                    >
+                        {`https://${
+                            projectId.length === 15 ? "us02" : "app"
+                        }.procore.com/${projectId}/project/home`}
+                    </a>
+                )}
+
                 <RunProcessModal
                     isOpen={isModalOpen}
                     onClose={() => setModalOpen(false)}
