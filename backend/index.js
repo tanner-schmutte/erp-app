@@ -7,7 +7,9 @@ const passport = require("./passport");
 const authRoutes = require("./routes/authRoutes");
 const directCostsRoutes = require("./routes/directCostsRoutes");
 const externalDataRoutes = require("./routes/externalDataRoutes");
+const erpRequestDetailsRoutes = require("./routes/erpRequestDetailsRoutes");
 const logRoutes = require("./routes/logRoutes");
+const pccoRoutes = require("./routes/pccoRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const userRoutes = require("./routes/userRoutes");
 
@@ -40,7 +42,9 @@ app.use(passport.session());
 app.use(authRoutes);
 app.use(directCostsRoutes);
 app.use(externalDataRoutes);
+app.use(erpRequestDetailsRoutes);
 app.use(logRoutes);
+app.use(pccoRoutes);
 app.use(projectRoutes);
 app.use(userRoutes);
 
