@@ -13,7 +13,7 @@ import DeleteUserModal from "./Elements/DeleteUserModal";
 import GetLogs from "./Processes/GetLogs";
 import DeleteDirectCosts from "./Processes/DeleteDirectCosts";
 import ShowExternalData from "./Processes/ShowExternalData";
-import UnlinkPCCOs from "./Processes/UnlinkPCCOs";
+import UnlinkPCCO from "./Processes/UnlinkPCCO";
 import UpdateSubJobs from "./Processes/UpdateSubJobs";
 import SyncRequisitions from "./Processes/SyncRequisitions";
 import UpdateProjectOriginData from "./Processes/UpdateProjectOriginData";
@@ -229,14 +229,14 @@ export default function App() {
                     }
                 />
                 <Route
-                    path="/unlink_pccos"
+                    path="/unlink_pcco"
                     element={
                         <ProtectedRoute
                             user={user}
                             roleOrder={roleOrder}
                             requiredRole={2}
                         >
-                            <UnlinkPCCOs />
+                            <UnlinkPCCO />
                         </ProtectedRoute>
                     }
                 />
