@@ -5,11 +5,13 @@ const axios = require("axios");
 router.get("/erp_request_details", async (req, res) => {
     console.log("\n\ngetting erp request details\n\n");
 
-    const { companyId, itemId } = req.query;
+    const { companyId, subJobId } = req.query;
+
+    console.log(req.query);
 
     try {
         const response = await axios.get(
-            `https://api.procore.com/rest/v1.0/companies/${companyId}/erp_request_details?filters[item_id]=${itemId}`,
+            `https://api.procore.com/rest/v1.0/companies/${companyId}/erp_request_details?filters[item_id]=${subJobId}`,
             {
                 headers: {
                     Authorization: `Bearer ${req.user.accessToken}`,
@@ -20,7 +22,7 @@ router.get("/erp_request_details", async (req, res) => {
 
         res.json(response.data);
     } catch (error) {
-        console.log(error.response.status, error.response.data.message);
+        console.log(error.response.status, error.response);
 
         res.status(error.response.status).json({
             message: error.response.data.message,
@@ -29,7 +31,11 @@ router.get("/erp_request_details", async (req, res) => {
 });
 
 router.patch("/erp_request_details", async (req, res) => {
+    console.log("\n\nupdating erp request details\n\n");
+
     const { companyId, requestDetailId } = req.body;
+
+    console.log(req.body);
 
     try {
         const response = await fetch(
@@ -67,3 +73,5 @@ router.patch("/erp_request_details", async (req, res) => {
         });
     }
 });
+
+module.exports = router;
