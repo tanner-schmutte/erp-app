@@ -183,6 +183,19 @@ h4 {
     padding: 20px;
 }
 
+.menu-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.menu-left {
+    width: 70%; 
+}
+
+.menu-right {
+    width: 30%; 
+}
+
 .menu.error {
     color: #e95760;
     font-weight: bold;

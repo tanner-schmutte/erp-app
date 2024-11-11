@@ -208,76 +208,88 @@ export default function HomepageContent({
                         {roleOrder[user.role] < 4 && (
                             <div className="menu">
                                 <h2 className="menu-title">Process Menu</h2>
-                                <ul>
-                                    <div
-                                        className="menu-item"
-                                        onClick={() =>
-                                            navigate("/delete_direct_costs")
-                                        }
-                                    >
-                                        <li className="item-name">
-                                            Delete a Project's Direct Costs
-                                        </li>
+                                <div className="menu-container">
+                                    {/* Left side - Data modification processes */}
+                                    <div className="menu-left">
+                                        <ul>
+                                            <div
+                                                className="menu-item"
+                                                onClick={() =>
+                                                    navigate(
+                                                        "/delete_direct_costs"
+                                                    )
+                                                }
+                                            >
+                                                <li className="item-name">
+                                                    Delete a Project's Direct
+                                                    Costs
+                                                </li>
+                                            </div>
+                                            <div
+                                                className={`menu-item ${
+                                                    roleOrder[user.role] > 2
+                                                        ? "disabled"
+                                                        : ""
+                                                }`}
+                                                onClick={() => {
+                                                    if (
+                                                        roleOrder[user.role] <=
+                                                        2
+                                                    ) {
+                                                        navigate(
+                                                            "/unlink_pccos"
+                                                        );
+                                                    }
+                                                }}
+                                            >
+                                                <li className="item-name">
+                                                    Sage 300: Unlink PCCOs
+                                                </li>
+                                            </div>
+                                            <div
+                                                className="menu-item"
+                                                onClick={() =>
+                                                    navigate("/update_sub_jobs")
+                                                }
+                                            >
+                                                <li className="item-name">
+                                                    Sage 300: Update Sub Jobs
+                                                </li>
+                                            </div>
+                                            <div
+                                                className="menu-item"
+                                                onClick={() =>
+                                                    navigate(
+                                                        "/update_project_origin_data"
+                                                    )
+                                                }
+                                            >
+                                                <li className="item-name">
+                                                    Yardi: Update Project Origin
+                                                    Data
+                                                </li>
+                                            </div>
+                                        </ul>
                                     </div>
-                                    <div
-                                        className={"menu-item"}
-                                        onClick={() =>
-                                            navigate("/show_external_data")
-                                        }
-                                    >
-                                        <li className="item-name">
-                                            Show External Data
-                                        </li>
+
+                                    {/* Right side - Show External Data */}
+                                    <div className="menu-right">
+                                        <ul>
+                                            <div
+                                                className="menu-item"
+                                                onClick={() =>
+                                                    navigate(
+                                                        "/show_external_data"
+                                                    )
+                                                }
+                                            >
+                                                <li className="item-name">
+                                                    Show External Data
+                                                </li>
+                                            </div>
+                                        </ul>
                                     </div>
-                                    <div
-                                        className={`menu-item ${
-                                            roleOrder[user.role] > 2
-                                                ? "disabled"
-                                                : ""
-                                        }`}
-                                        onClick={() => {
-                                            if (roleOrder[user.role] <= 2) {
-                                                navigate("/unlink_pccos");
-                                            }
-                                        }}
-                                    >
-                                        <li className="item-name">
-                                            Sage 300: Unlink PCCOs
-                                        </li>
-                                    </div>
-                                    <div
-                                        className="menu-item"
-                                        onClick={() =>
-                                            navigate("/update_sub_jobs")
-                                        }
-                                    >
-                                        <li className="item-name">
-                                            Sage 300: Update Sub Jobs
-                                        </li>
-                                    </div>
-                                    {/* <div
-                                        className="menu-item"
-                                        onClick={() =>
-                                            navigate("/sync_requisitions")
-                                        }
-                                    >
-                                        <li className="item-name">
-                                            QBD: Sync Requisitions
-                                        </li>
-                                    </div> */}
-                                    <div
-                                        className="menu-item"
-                                        onClick={() =>
-                                            navigate(
-                                                "/update_project_origin_data"
-                                            )
-                                        }
-                                    >
-                                        <li className="item-name">
-                                            Yardi: Update Project Origin Data
-                                        </li>
-                                    </div>
-                                </ul>
+                                </div>
                                 <br />
                             </div>
                         )}
