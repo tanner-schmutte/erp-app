@@ -40,7 +40,7 @@ export default function UpdateProjectOriginData() {
     const updateProjectOriginData = async (totalCalls) => {
         try {
             const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/external_data`,
+                `${import.meta.env.VITE_BACKEND_URL}/origin_data`,
                 {
                     method: "PATCH",
                     headers: {
@@ -198,7 +198,7 @@ export default function UpdateProjectOriginData() {
                     </div>
                 )}
 
-                {progress >= 100 && (
+                {progress >= 95 && (
                     <a
                         href={`https://${
                             projectId.length === 15 ? "us02" : "app"
