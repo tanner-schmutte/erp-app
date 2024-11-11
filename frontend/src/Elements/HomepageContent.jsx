@@ -220,14 +220,13 @@ export default function HomepageContent({
                                         </li>
                                     </div>
                                     <div
-                                        className={`menu-item ${
-                                            roleOrder[user.role] > 2
-                                                ? "disabled"
-                                                : ""
-                                        }`}
+                                        className={"menu-item"}
+                                        onClick={() =>
+                                            navigate("/show_external_data")
+                                        }
                                     >
                                         <li className="item-name">
-                                            Get / Update External Data
+                                            Show External Data
                                         </li>
                                     </div>
                                     <div
@@ -256,7 +255,7 @@ export default function HomepageContent({
                                             Sage 300: Update Sub Jobs
                                         </li>
                                     </div>
-                                    <div
+                                    {/* <div
                                         className="menu-item"
                                         onClick={() =>
                                             navigate("/sync_requisitions")
@@ -265,7 +264,7 @@ export default function HomepageContent({
                                         <li className="item-name">
                                             QBD: Sync Requisitions
                                         </li>
-                                    </div>
+                                    </div> */}
                                     <div
                                         className="menu-item"
                                         onClick={() =>

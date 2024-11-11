@@ -1,5 +1,35 @@
 const express = require("express");
 const router = express.Router();
+const axios = require("axios");
+
+// Show External Data
+router.get("/external_data", async (req, res) => {
+    console.log("\n\ngetting erp request details\n\n");
+
+    const { companyId, itemId, itemType } = req.query;
+
+    console.log(req.query);
+
+    try {
+        const response = await axios.get(
+            `https://api.procore.com/rest/v1.0/companies/${companyId}/external_data?item_type=${itemType}&item_id=${itemId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${req.user.accessToken}`,
+                    "Procore-Company-Id": companyId,
+                },
+            }
+        );
+
+        res.json(response.data);
+    } catch (error) {
+        console.log(error.response.status, error.response);
+
+        res.status(error.response.status).json({
+            message: error.response.data.message,
+        });
+    }
+});
 
 // Delete External Data
 router.delete("/external_data", async (req, res) => {

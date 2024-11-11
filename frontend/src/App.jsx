@@ -12,6 +12,7 @@ import DeleteUserModal from "./Elements/DeleteUserModal";
 
 import GetLogs from "./Processes/GetLogs";
 import DeleteDirectCosts from "./Processes/DeleteDirectCosts";
+import ShowExternalData from "./Processes/ShowExternalData";
 import UnlinkPCCOs from "./Processes/UnlinkPCCOs";
 import UpdateSubJobs from "./Processes/UpdateSubJobs";
 import SyncRequisitions from "./Processes/SyncRequisitions";
@@ -212,6 +213,18 @@ export default function App() {
                             requiredRole={3}
                         >
                             <DeleteDirectCosts />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/show_external_data"
+                    element={
+                        <ProtectedRoute
+                            user={user}
+                            roleOrder={roleOrder}
+                            requiredRole={3}
+                        >
+                            <ShowExternalData />
                         </ProtectedRoute>
                     }
                 />
