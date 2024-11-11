@@ -237,13 +237,13 @@ export default function HomepageContent({
                                                         2
                                                     ) {
                                                         navigate(
-                                                            "/unlink_pccos"
+                                                            "/unlink_pcco"
                                                         );
                                                     }
                                                 }}
                                             >
                                                 <li className="item-name">
-                                                    Sage 300: Unlink PCCOs
+                                                    Sage 300: Unlink PCCO
                                                 </li>
                                             </div>
                                             <div
