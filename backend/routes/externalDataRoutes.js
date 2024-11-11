@@ -69,8 +69,8 @@ router.delete("/external_data", async (req, res) => {
     }
 });
 
-// Update External Data
-router.patch("/external_data", async (req, res) => {
+// Update Origin Data
+router.patch("/origin_data", async (req, res) => {
     const { companyId, item_type, item_id, origin_data } = req.body;
 
     const requestBody = {
@@ -94,6 +94,39 @@ router.patch("/external_data", async (req, res) => {
                     "Procore-Company-Id": companyId,
                 },
                 body: JSON.stringify(requestBody),
+            }
+        );
+
+        if (response.ok) {
+            const json = await response.json();
+            console.log(json);
+            res.status(200).json({
+                message: "External data updated successfully",
+            });
+        } else {
+            throw new Error(
+                `Failed to update external data: ${response.status} ${response.statusText}`
+            );
+        }
+    } catch (error) {
+        console.error("Error updating external data:", error);
+        res.status(500).json({ message: "Failed to update external data" });
+    }
+});
+
+// Unlink Item
+router.patch("/unlink_items", async (req, res) => {
+    try {
+        const response = await fetch(
+            `https://api.procore.com/rest/v1.0/companies/${companyId}/external_data/sync`,
+            {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${req.user.accessToken}`,
+                    "Content-Type": "application/json",
+                    "Procore-Company-Id": companyId,
+                },
+                body: JSON.stringify({ updates: req.body }),
             }
         );
 
