@@ -189,11 +189,12 @@ h4 {
 }
 
 .menu-left {
-    width: 70%; 
+    width: 70%;
 }
 
 .menu-right {
-    width: 30%; 
+    width: 30%;
+    padding-right: 5%;
 }
 
 .menu.error {
