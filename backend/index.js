@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const session = require("express-session");
 const cors = require("cors");
 require("dotenv").config();
@@ -20,10 +21,13 @@ app.use(express.json());
 // Enable CORS for requests from frontend
 app.use(
     cors({
-        origin: process.env.FRONTEND_URL, // Allow requests from frontend
+        origin: process.env.FRONTEND_URL,
         credentials: true, // Allow credentials (cookies/sessions)
     })
 );
+
+// Serve static files from the frontend build
+app.use(express.static(path.join(__dirname, "../frontend", "dist")));
 
 // Session setup (stores user login state)
 app.use(
@@ -39,16 +43,22 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Use routes
-app.use(authRoutes);
-app.use(directCostsRoutes);
-app.use(externalDataRoutes);
-app.use(erpRequestDetailsRoutes);
-app.use(logRoutes);
-app.use(pccoRoutes);
-app.use(projectRoutes);
-app.use(userRoutes);
+app.use("/api", authRoutes);
+app.use("/api", directCostsRoutes);
+app.use("/api", externalDataRoutes);
+app.use("/api", erpRequestDetailsRoutes);
+app.use("/api", logRoutes);
+app.use("/api", pccoRoutes);
+app.use("/api", projectRoutes);
+app.use("/api", userRoutes);
 
-// Start the backend server on port 3001
-app.listen(3001, () => {
-    console.log("Backend running on http://localhost:3001");
+// Serve the frontend app for any non-API routes
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+});
+
+// Start the backend server
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Backend running on http://localhost:${PORT}`);
 });
