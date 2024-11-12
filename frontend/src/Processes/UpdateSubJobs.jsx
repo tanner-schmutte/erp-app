@@ -55,8 +55,7 @@ export default function UpdateSubJobs() {
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(
-                        errorData.message ||
-                            "Failed to update ERP request detail."
+                        errorData.message || "Failed to update Sub Job."
                     );
                 }
 
@@ -85,7 +84,7 @@ export default function UpdateSubJobs() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    process: "Update ERP Request Detail",
+                    process: "Update Sub Job",
                     companyId,
                     itemType: "ERP Request Detail",
                     itemId: subJobId,
