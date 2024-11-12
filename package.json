@@ -1,0 +1,8 @@
+{
+    "name": "erp-app",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "cd backend && node index.js",
+        "build": "cd frontend && npm install && npm run build"
+    }
+}
