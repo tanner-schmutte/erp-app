@@ -53,7 +53,9 @@ export default function UnlinkPCCO() {
         try {
             // Unlink change order itself
             const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/unlink_items`,
+                `${
+                    import.meta.env.VITE_BACKEND_URL
+                }/unlink_items?companyId=${companyId}`,
                 {
                     method: "PATCH",
                     headers: {
@@ -103,7 +105,9 @@ export default function UnlinkPCCO() {
 
             for (const batch of batches) {
                 const batchResponse = await fetch(
-                    `${import.meta.env.VITE_BACKEND_URL}/unlink_items`,
+                    `${
+                        import.meta.env.VITE_BACKEND_URL
+                    }/unlink_items?companyId=${companyId}`,
                     {
                         method: "PATCH",
                         headers: {
@@ -183,8 +187,6 @@ export default function UnlinkPCCO() {
         if (!success) {
             setError(errorMessage);
         }
-
-        setIsProcessing(false);
     };
 
     return (

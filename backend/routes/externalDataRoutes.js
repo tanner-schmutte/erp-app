@@ -116,6 +116,8 @@ router.patch("/origin_data", async (req, res) => {
 
 // Unlink Item
 router.patch("/unlink_items", async (req, res) => {
+    const { companyId } = req.query;
+
     try {
         const response = await fetch(
             `https://api.procore.com/rest/v1.0/companies/${companyId}/external_data/sync`,
