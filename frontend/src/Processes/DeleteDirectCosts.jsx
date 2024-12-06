@@ -35,13 +35,13 @@ export default function DeleteDirectCosts() {
         setCompanyName(data.company.name);
     };
 
-    // Fetch all direct costs for the project
-    const fetchDirectCosts = async () => {
+    // Fetch all direct cost line items for the project
+    const fetchDirectCostLineItems = async () => {
         try {
             const response = await fetch(
                 `${
                     import.meta.env.VITE_BACKEND_URL
-                }/direct_costs?companyId=${companyId}&projectId=${projectId}`,
+                }/direct_costs/line_items?companyId=${companyId}&projectId=${projectId}`,
                 { credentials: "include" }
             );
             const data = await response.json();
@@ -53,6 +53,23 @@ export default function DeleteDirectCosts() {
             console.log("Total Calls:", totalCalls);
 
             return { data, totalCalls };
+        } catch (error) {
+            console.error("Error fetching direct cost line items:", error);
+            setError(error.message);
+        }
+    };
+
+    const fetchDirectCosts = async () => {
+        try {
+            const response = await fetch(
+                `${
+                    import.meta.env.VITE_BACKEND_URL
+                }/direct_costs?companyId=${companyId}&projectId=${projectId}`,
+                { credentials: "include" }
+            );
+            const data = await response.json();
+
+            return data;
         } catch (error) {
             console.error("Error fetching direct costs:", error);
             setError(error.message);
@@ -106,8 +123,14 @@ export default function DeleteDirectCosts() {
     };
 
     // Delete each direct cost item
-    const deleteDirectCosts = async (directCosts, totalCalls) => {
-        const ids = directCosts.map((directCost) => directCost.holder.id);
+    const deleteDirectCosts = async (directCosts, totalCalls, lineItems) => {
+        let ids;
+
+        if (lineItems) {
+            ids = directCosts.map((directCost) => directCost.holder.id);
+        } else {
+            ids = directCosts.map((directCost) => directCost.id);
+        }
 
         const batches = chunkArray(ids, 1000); // Split into batches of 1000
 
@@ -179,15 +202,29 @@ export default function DeleteDirectCosts() {
         setModalOpen(false);
         setError("");
 
-        const result = await fetchDirectCosts();
+        const lineItems = await fetchDirectCostLineItems();
 
-        const { data: fetchedDirectCosts, totalCalls } = result;
+        const { data: fetchedDirectCosts, totalCalls } = lineItems;
 
         setDeleting(true);
 
         await deleteExternalData(fetchedDirectCosts, "item", totalCalls);
         await deleteExternalData(fetchedDirectCosts, "line_item", totalCalls);
-        await deleteDirectCosts(fetchedDirectCosts, totalCalls);
+        await deleteDirectCosts(fetchedDirectCosts, totalCalls, true);
+
+        const directCosts = await fetchDirectCosts();
+
+        if (directCosts) {
+            if (data) {
+                await deleteDirectCosts(directCosts, totalCalls, false);
+            } else {
+                await deleteDirectCosts(
+                    directCosts,
+                    Math.ceil(directCosts.length / 1000),
+                    false
+                );
+            }
+        }
 
         logProcess("success", "");
     };

@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 
-router.get("/direct_costs", async (req, res) => {
+router.get("/direct_costs/line_items", async (req, res) => {
     const { companyId, projectId } = req.query;
 
     console.log("\n\ngetting direct costs\n\n");
@@ -10,6 +10,32 @@ router.get("/direct_costs", async (req, res) => {
     try {
         const response = await axios.get(
             `https://api.procore.com/rest/v1.0/projects/${projectId}/direct_costs/line_items`,
+            {
+                headers: {
+                    Authorization: `Bearer ${req.user.accessToken}`,
+                    "Procore-Company-Id": companyId,
+                },
+            }
+        );
+
+        res.json(response.data);
+    } catch (error) {
+        console.log(error.response.status, error.response.data.message);
+
+        res.status(error.response.status).json({
+            message: error.response.data.message,
+        });
+    }
+});
+
+router.get("/direct_costs", async (req, res) => {
+    const { companyId, projectId } = req.query;
+
+    console.log("\n\ngetting direct costs\n\n");
+
+    try {
+        const response = await axios.get(
+            `https://api.procore.com/rest/v1.0/projects/${projectId}/direct_costs`,
             {
                 headers: {
                     Authorization: `Bearer ${req.user.accessToken}`,
