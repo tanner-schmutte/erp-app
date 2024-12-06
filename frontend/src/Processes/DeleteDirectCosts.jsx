@@ -208,14 +208,22 @@ export default function DeleteDirectCosts() {
 
         setDeleting(true);
 
-        await deleteExternalData(fetchedDirectCosts, "item", totalCalls);
-        await deleteExternalData(fetchedDirectCosts, "line_item", totalCalls);
-        await deleteDirectCosts(fetchedDirectCosts, totalCalls, true);
+        await deleteExternalData(
+            fetchedDirectCostLineItems,
+            "item",
+            totalCalls
+        );
+        await deleteExternalData(
+            fetchedDirectCostLineItems,
+            "line_item",
+            totalCalls
+        );
+        await deleteDirectCosts(fetchedDirectCostLineItems, totalCalls, true);
 
         const directCosts = await fetchDirectCosts();
 
         if (directCosts) {
-            if (data) {
+            if (fetchedDirectCostLineItems) {
                 await deleteDirectCosts(directCosts, totalCalls, false);
             } else {
                 await deleteDirectCosts(
