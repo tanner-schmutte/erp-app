@@ -204,7 +204,7 @@ export default function DeleteDirectCosts() {
 
         const lineItems = await fetchDirectCostLineItems();
 
-        const { data: fetchedDirectCosts, totalCalls } = lineItems;
+        const { data: fetchedDirectCostLineItems, totalCalls } = lineItems;
 
         setDeleting(true);
 
