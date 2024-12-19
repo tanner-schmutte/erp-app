@@ -197,6 +197,12 @@ h4 {
     padding-right: 5%;
 }
 
+.message {
+    margin-top: 30px;
+    font-weight: bold;
+    text-align: center;
+}
+
 .menu.error {
     color: #e95760;
     font-weight: bold;

@@ -10,9 +10,11 @@ export default function DeleteDirectCosts() {
     const [isDeleting, setDeleting] = useState(false);
     const [completed, setCompleted] = useState(0);
     const [progress, setProgress] = useState(0);
+    const [message, setMessage] = useState("");
     const [projectName, setProjectName] = useState("");
     const [companyName, setCompanyName] = useState("");
     const [error, setError] = useState("");
+    const [finished, setFinished] = useState(false);
 
     // Fetch project and company name
     const fetchProject = async () => {
@@ -46,13 +48,7 @@ export default function DeleteDirectCosts() {
             );
             const data = await response.json();
 
-            const totalCalls =
-                2 * Math.ceil(data.length / 100) +
-                Math.ceil(data.length / 1000);
-
-            console.log("Total Calls:", totalCalls);
-
-            return { data, totalCalls };
+            return data;
         } catch (error) {
             console.error("Error fetching direct cost line items:", error);
             setError(error.message);
@@ -84,11 +80,14 @@ export default function DeleteDirectCosts() {
         return result;
     };
 
-    const deleteExternalData = async (directCosts, item_type, totalCalls) => {
-        const ids =
-            item_type === "line_item"
-                ? directCosts.map((directCost) => directCost.id)
-                : directCosts.map((directCost) => directCost.holder.id);
+    const deleteExternalData = async (data, totalCalls, item_type) => {
+        if (item_type === "line_item") {
+            setMessage("Deleting Line Items External Data...");
+        } else {
+            setMessage("Deleting Direct Costs External Data...");
+        }
+
+        const ids = data.map((obj) => obj.id);
 
         const batches = chunkArray(ids, 100); // Split into batches of 100
 
@@ -123,14 +122,10 @@ export default function DeleteDirectCosts() {
     };
 
     // Delete each direct cost item
-    const deleteDirectCosts = async (directCosts, totalCalls, lineItems) => {
-        let ids;
+    const deleteDirectCosts = async (directCosts, totalCalls) => {
+        setMessage("Deleting Direct Costs...");
 
-        if (lineItems) {
-            ids = directCosts.map((directCost) => directCost.holder.id);
-        } else {
-            ids = directCosts.map((directCost) => directCost.id);
-        }
+        const ids = directCosts.map((directCost) => directCost.id);
 
         const batches = chunkArray(ids, 1000); // Split into batches of 1000
 
@@ -201,39 +196,42 @@ export default function DeleteDirectCosts() {
     const runProcess = async () => {
         setModalOpen(false);
         setError("");
+        setMessage("Fetching Direct Costs...");
 
-        const lineItems = await fetchDirectCostLineItems();
+        let loop = true;
 
-        const { data: fetchedDirectCostLineItems, totalCalls } = lineItems;
+        while (loop) {
+            let lineItems = await fetchDirectCostLineItems();
+            let directCosts = await fetchDirectCosts();
 
-        setDeleting(true);
+            if (directCosts.length < 10000) loop = false;
 
-        await deleteExternalData(
-            fetchedDirectCostLineItems,
-            "item",
-            totalCalls
-        );
-        await deleteExternalData(
-            fetchedDirectCostLineItems,
-            "line_item",
-            totalCalls
-        );
-        await deleteDirectCosts(fetchedDirectCostLineItems, totalCalls, true);
+            setDeleting(true);
 
-        const directCosts = await fetchDirectCosts();
+            await deleteExternalData(
+                lineItems,
+                Math.ceil(lineItems.length / 100),
+                "line_item"
+            );
 
-        if (directCosts) {
-            if (fetchedDirectCostLineItems) {
-                await deleteDirectCosts(directCosts, totalCalls, false);
-            } else {
-                await deleteDirectCosts(
-                    directCosts,
-                    Math.ceil(directCosts.length / 1000),
-                    false
-                );
-            }
+            setMessage("");
+            setProgress(0);
+            setCompleted(0);
+
+            await deleteExternalData(
+                directCosts,
+                Math.ceil(directCosts.length / 100),
+                "item"
+            );
+
+            setMessage("");
+            setProgress(0);
+            setCompleted(0);
+
+            await deleteDirectCosts(directCosts, 1);
         }
 
+        setFinished(true);
         logProcess("success", "");
     };
 
@@ -280,6 +278,8 @@ export default function DeleteDirectCosts() {
                     </div>
                 </div>
 
+                {message && <div className="message">{message}</div>}
+
                 {error && <div className="menu error">{error}</div>}
 
                 {isDeleting && (
@@ -293,7 +293,7 @@ export default function DeleteDirectCosts() {
                     </div>
                 )}
 
-                {progress >= 100 && (
+                {finished && (
                     <a
                         href={`https://${
                             projectId.length === 15 ? "us02" : "app"
