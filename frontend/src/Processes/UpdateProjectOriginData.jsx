@@ -142,7 +142,6 @@ export default function UpdateProjectOriginData() {
                             type="text"
                             value={companyId}
                             onChange={(e) => setCompanyId(e.target.value)}
-                            placeholder="Enter Company ID"
                             className="menu-input"
                             disabled={isUpdating}
                         />
@@ -153,7 +152,6 @@ export default function UpdateProjectOriginData() {
                             type="text"
                             value={projectId}
                             onChange={(e) => setProjectId(e.target.value)}
-                            placeholder="Enter Project ID"
                             className="menu-input"
                             disabled={isUpdating}
                         />
@@ -164,7 +162,6 @@ export default function UpdateProjectOriginData() {
                             type="text"
                             value={yardiPropertyId}
                             onChange={(e) => setYardiPropertyId(e.target.value)}
-                            placeholder="Enter Yardi Property ID"
                             className="menu-input"
                             disabled={isUpdating}
                         />
@@ -217,9 +214,9 @@ export default function UpdateProjectOriginData() {
                     isOpen={isModalOpen}
                     onClose={() => setModalOpen(false)}
                     onConfirm={runProcess}
-                    process={`update project origin data`}
-                    projectName={projectName}
-                    companyName={companyName}
+                    process={`update project origin data for`}
+                    child={projectName}
+                    parent={companyName}
                 />
             </div>
         </>

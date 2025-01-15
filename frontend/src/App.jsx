@@ -14,8 +14,8 @@ import GetLogs from "./Processes/GetLogs";
 import DeleteDirectCosts from "./Processes/DeleteDirectCosts";
 import ShowExternalData from "./Processes/ShowExternalData";
 import UnlinkPCCO from "./Processes/UnlinkPCCO";
+import UnlinkBudgetChange from "./Processes/UnlinkBudgetChange";
 import UpdateSubJobs from "./Processes/UpdateSubJobs";
-import SyncRequisitions from "./Processes/SyncRequisitions";
 import UpdateProjectOriginData from "./Processes/UpdateProjectOriginData";
 
 function ProtectedRoute({ user, roleOrder, requiredRole, children }) {
@@ -241,6 +241,18 @@ export default function App() {
                     }
                 />
                 <Route
+                    path="/unlink_budget_change"
+                    element={
+                        <ProtectedRoute
+                            user={user}
+                            roleOrder={roleOrder}
+                            requiredRole={3}
+                        >
+                            <UnlinkBudgetChange />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/update_sub_jobs"
                     element={
                         <ProtectedRoute
@@ -249,18 +261,6 @@ export default function App() {
                             requiredRole={3}
                         >
                             <UpdateSubJobs />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/sync_requisitions"
-                    element={
-                        <ProtectedRoute
-                            user={user}
-                            roleOrder={roleOrder}
-                            requiredRole={3}
-                        >
-                            <SyncRequisitions />
                         </ProtectedRoute>
                     }
                 />

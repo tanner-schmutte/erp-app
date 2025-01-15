@@ -251,7 +251,6 @@ export default function DeleteDirectCosts() {
                             type="text"
                             value={companyId}
                             onChange={(e) => setCompanyId(e.target.value)}
-                            placeholder="Enter Company ID"
                             className="menu-input"
                             disabled={isDeleting}
                         />
@@ -262,7 +261,6 @@ export default function DeleteDirectCosts() {
                             type="text"
                             value={projectId}
                             onChange={(e) => setProjectId(e.target.value)}
-                            placeholder="Enter Project ID"
                             className="menu-input"
                             disabled={isDeleting}
                         />
@@ -312,9 +310,9 @@ export default function DeleteDirectCosts() {
                     isOpen={isModalOpen}
                     onClose={() => setModalOpen(false)}
                     onConfirm={runProcess}
-                    process={`delete all direct costs`}
-                    projectName={projectName}
-                    companyName={companyName}
+                    process={`delete all direct costs for`}
+                    child={projectName}
+                    parent={companyName}
                 />
             </div>
         </>

@@ -18,7 +18,7 @@ export default function UpdateSubJobs() {
         const response = await fetch(
             `${
                 import.meta.env.VITE_BACKEND_URL
-            }/erp_request_details?companyId=${companyId}&subJobId=${subJobId}`,
+            }/erp_request_details?companyId=${companyId}&itemId=${subJobId}`,
             { credentials: "include" }
         );
 
@@ -38,7 +38,9 @@ export default function UpdateSubJobs() {
         try {
             for (requestDetailId of erpRequestDetailsIds) {
                 const response = await fetch(
-                    `${import.meta.env.VITE_BACKEND_URL}/erp_request_details`,
+                    `${
+                        import.meta.env.VITE_BACKEND_URL
+                    }/erp_request_details_success`,
                     {
                         method: "PATCH",
                         headers: {
@@ -111,7 +113,6 @@ export default function UpdateSubJobs() {
     const runProcess = async () => {
         setModalOpen(false);
         setError("");
-
         setIsUpdating(true);
 
         const result = await updateERPRequestDetail(
@@ -139,7 +140,6 @@ export default function UpdateSubJobs() {
                             type="text"
                             value={companyId}
                             onChange={(e) => setCompanyId(e.target.value)}
-                            placeholder="Enter Company ID"
                             className="menu-input"
                             disabled={isUpdating}
                         />
@@ -150,7 +150,6 @@ export default function UpdateSubJobs() {
                             type="text"
                             value={subJobId}
                             onChange={(e) => setSubJobId(e.target.value)}
-                            placeholder="Enter Sub Job ID"
                             className="menu-input"
                             disabled={isUpdating}
                         />
@@ -184,8 +183,8 @@ export default function UpdateSubJobs() {
                     onClose={() => setModalOpen(false)}
                     onConfirm={runProcess}
                     process={`update sub job`}
-                    projectName={subJobId}
-                    companyName={companyId}
+                    child={subJobId}
+                    parent={companyId}
                 />
             </div>
         </>

@@ -3,8 +3,8 @@ export default function RunProcessModal({
     onClose,
     onConfirm,
     process,
-    projectName,
-    companyName,
+    child,
+    parent,
 }) {
     if (!isOpen) return null;
 
@@ -12,10 +12,10 @@ export default function RunProcessModal({
         <div className="modal-overlay">
             <div className="modal">
                 <h2>Please Confirm</h2>
-                <p>Are you sure you want to {process} for</p>
-                <p style={{ fontWeight: "bold" }}>{projectName}</p>
+                <p>Are you sure you want to {process}</p>
+                <p style={{ fontWeight: "bold" }}>{child}</p>
                 <p>in</p>
-                <p style={{ fontWeight: "bold" }}>{companyName}</p>
+                <p style={{ fontWeight: "bold" }}>{parent}</p>
                 <div className="modal-buttons">
                     <button onClick={onConfirm} className="confirm-run">
                         Yes

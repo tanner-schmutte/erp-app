@@ -243,7 +243,28 @@ export default function HomepageContent({
                                                 }}
                                             >
                                                 <li className="item-name">
-                                                    Sage 300: Unlink PCCO
+                                                    Unlink PCCO
+                                                </li>
+                                            </div>
+                                            <div
+                                                className={`menu-item ${
+                                                    roleOrder[user.role] > 2
+                                                        ? "disabled"
+                                                        : ""
+                                                }`}
+                                                onClick={() => {
+                                                    if (
+                                                        roleOrder[user.role] <=
+                                                        2
+                                                    ) {
+                                                        navigate(
+                                                            "/unlink_budget_change"
+                                                        );
+                                                    }
+                                                }}
+                                            >
+                                                <li className="item-name">
+                                                    Unlink Budget Change
                                                 </li>
                                             </div>
                                             <div

@@ -3,12 +3,11 @@ import Banner from "../Elements/Banner";
 import RunProcessModal from "../Elements/RunProcessModal";
 import "../App.css";
 
-export default function UnlinkPCCO() {
+export default function UnlinkBudgetChange() {
     const [companyId, setCompanyId] = useState("");
     const [projectId, setProjectId] = useState("");
     const [projectName, setProjectName] = useState("");
-    const [contractId, setContractId] = useState("");
-    const [changeOrderId, setChangeOrderId] = useState("");
+    const [budgetChangeId, setbudgetChangeId] = useState("");
     const [isModalOpen, setModalOpen] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [completed, setCompleted] = useState(0);
@@ -36,46 +35,13 @@ export default function UnlinkPCCO() {
         setProjectName(data.name);
     };
 
-    // Fetch change order details
-    const fetchChangeOrder = async () => {
-        try {
-            const response = await fetch(
-                `${
-                    import.meta.env.VITE_BACKEND_URL
-                }/change_order?companyId=${companyId}&projectId=${projectId}&contractId=${contractId}&changeOrderId=${changeOrderId}`,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    credentials: "include",
-                }
-            );
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(
-                    `${response.status} ${
-                        errorData.message || response.statusText
-                    }`
-                );
-            }
-
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching change order:", error);
-            setError(error.message);
-            throw error;
-        }
-    };
-
     // Unlink change order and line items
-    const unlinkChangeOrder = async (changeOrder) => {
-        const totalCalls = Math.ceil(changeOrder.line_items.length / 100) + 1;
+    const unlinkBudgetChange = async () => {
+        const totalCalls = 3;
 
         try {
             // Unlink change order itself
-            const response = await fetch(
+            const unlink = await fetch(
                 `${
                     import.meta.env.VITE_BACKEND_URL
                 }/unlink_items?companyId=${companyId}`,
@@ -86,8 +52,8 @@ export default function UnlinkPCCO() {
                     },
                     body: JSON.stringify([
                         {
-                            item_id: changeOrder.id,
-                            item_type: "change_order",
+                            item_id: budgetChangeId,
+                            item_type: "budget_change",
                             origin_code: null,
                             origin_id: null,
                             origin_data: null,
@@ -97,7 +63,7 @@ export default function UnlinkPCCO() {
                 }
             );
 
-            if (!response.ok) {
+            if (!unlink.ok) {
                 throw new Error("Failed to unlink change order");
             }
 
@@ -107,54 +73,114 @@ export default function UnlinkPCCO() {
                 return newCompleted;
             });
 
-            // Unlink line items
-            const lineItemsBody = changeOrder.line_items.map((line_item) => ({
-                item_id: line_item.id,
-                item_type: "line_item",
-                origin_code: null,
-                origin_id: null,
-                origin_data: null,
-            }));
+            let erpRequestDetails = await fetch(
+                `${
+                    import.meta.env.VITE_BACKEND_URL
+                }/erp_request_details?companyId=${companyId}&itemId=${budgetChangeId}`,
+                { credentials: "include" }
+            );
 
-            const chunkArray = (array, size) => {
-                const result = [];
-                for (let i = 0; i < array.length; i += size) {
-                    result.push(array.slice(i, i + size));
+            if (!erpRequestDetails.ok) {
+                const errorData = await response.json();
+                throw new Error(
+                    `${response.status} ${
+                        errorData.message || response.statusText
+                    }`
+                );
+            }
+
+            erpRequestDetails = await erpRequestDetails.json();
+
+            let erpRequestDetailsId = erpRequestDetails[0].id;
+
+            await fetch(
+                `${
+                    import.meta.env.VITE_BACKEND_URL
+                }/erp_request_details_rejected`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        companyId,
+                        erpRequestDetailsId,
+                    }),
+                    credentials: "include",
                 }
-                return result;
-            };
+            );
 
-            const batches = chunkArray(lineItemsBody, 100);
+            setCompleted((prev) => {
+                const newCompleted = prev + 1;
+                setProgress(((newCompleted / totalCalls) * 100).toFixed(0));
+                return newCompleted;
+            });
 
-            for (const batch of batches) {
-                const batchResponse = await fetch(
-                    `${
-                        import.meta.env.VITE_BACKEND_URL
-                    }/unlink_items?companyId=${companyId}`,
+            let erpTransactions = await fetch(
+                `${
+                    import.meta.env.VITE_BACKEND_URL
+                }/erp_transactions?companyId=${companyId}&projectId=${projectId}`,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                }
+            );
+
+            erpTransactions = await erpTransactions.json();
+
+            let budgetChange = await fetch(
+                `${
+                    import.meta.env.VITE_BACKEND_URL
+                }/budget_change?companyId=${companyId}&projectId=${projectId}&budgetChangeId=${budgetChangeId}`,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                }
+            );
+
+            budgetChange = await budgetChange.json();
+
+            let lineItems = budgetChange.data.adjustment_line_items;
+
+            let lineItemIds = lineItems.map((lineItem) => lineItem.id);
+
+            const matchingIds = erpTransactions
+                .filter((transaction) =>
+                    lineItemIds.includes(transaction.procore_transaction_id)
+                )
+                .map((transaction) => transaction.id);
+
+            for (let transactionId of matchingIds) {
+                await fetch(
+                    `${import.meta.env.VITE_BACKEND_URL}/erp_transactions`,
                     {
                         method: "PATCH",
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify(batch),
+                        body: JSON.stringify({
+                            companyId,
+                            projectId,
+                            transactionId,
+                        }),
                         credentials: "include",
                     }
                 );
-
-                if (!batchResponse.ok) {
-                    throw new Error("Failed to unlink line items.");
-                }
-
-                setCompleted((prev) => {
-                    const newCompleted = prev + 1;
-                    setProgress(((newCompleted / totalCalls) * 100).toFixed(0));
-                    return newCompleted;
-                });
             }
+
+            setCompleted((prev) => {
+                const newCompleted = prev + 1;
+                setProgress(((newCompleted / totalCalls) * 100).toFixed(0));
+                return newCompleted;
+            });
 
             return true; // Indicate success
         } catch (error) {
-            console.error("Error unlinking PCCO:", error);
+            console.error("Error unlinking Budget Change:", error);
             setError(error.message);
             setIsProcessing(false);
             return error.message; // Return error message as string
@@ -170,10 +196,10 @@ export default function UnlinkPCCO() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    process: "Unlink PCCO",
+                    process: "Unlink Budget Change",
                     companyId,
-                    itemType: "PCCO",
-                    itemId: changeOrderId,
+                    itemType: "Budget Change",
+                    itemId: budgetChangeId,
                     status: status,
                     error: error,
                 }),
@@ -188,8 +214,7 @@ export default function UnlinkPCCO() {
         setError("");
         try {
             await fetchProject();
-            await fetchChangeOrder();
-            setModalOpen(true); // Only opens if fetchChangeOrder succeeds
+            setModalOpen(true);
         } catch (error) {
             setError(error.message); // Sets the error without opening modal
         }
@@ -200,8 +225,7 @@ export default function UnlinkPCCO() {
         setError("");
         setIsProcessing(true);
 
-        const changeOrder = await fetchChangeOrder();
-        const result = await unlinkChangeOrder(changeOrder);
+        const result = await unlinkBudgetChange();
 
         // Check if the result is true (success) or an error message (failure)
         const success = result === true;
@@ -223,7 +247,7 @@ export default function UnlinkPCCO() {
             <Banner />
             <div className="content-container">
                 <div className="menu">
-                    <h2 className="menu-title">Unlink PCCO</h2>
+                    <h2 className="menu-title">Unlink Budget Change</h2>
                     <div className="item-name center">
                         <label>Company ID:</label>
                         <input
@@ -245,21 +269,11 @@ export default function UnlinkPCCO() {
                         />
                     </div>
                     <div className="item-name center">
-                        <label>Contract ID:</label>
+                        <label>Budget Change ID:</label>
                         <input
                             type="text"
-                            value={contractId}
-                            onChange={(e) => setContractId(e.target.value)}
-                            className="menu-input"
-                            disabled={isProcessing}
-                        />
-                    </div>
-                    <div className="item-name center">
-                        <label>Change Order ID:</label>
-                        <input
-                            type="text"
-                            value={changeOrderId}
-                            onChange={(e) => setChangeOrderId(e.target.value)}
+                            value={budgetChangeId}
+                            onChange={(e) => setbudgetChangeId(e.target.value)}
                             className="menu-input"
                             disabled={isProcessing}
                         />
@@ -272,11 +286,10 @@ export default function UnlinkPCCO() {
                                 isProcessing ||
                                 !companyId ||
                                 !projectId ||
-                                !contractId ||
-                                !changeOrderId
+                                !budgetChangeId
                             }
                         >
-                            Unlink PCCO
+                            Unlink Budget Change
                         </button>
                     </div>
                 </div>
@@ -297,14 +310,14 @@ export default function UnlinkPCCO() {
                     <a
                         href={`https://${
                             projectId.length === 15 ? "us02" : "app"
-                        }.procore.com/${projectId}/project/prime_contracts/${contractId}/change_orders/change_order_packages/${changeOrderId}`}
+                        }.procore.com/companies/${companyId}/projects/${projectId}/tools/budget_changes/${budgetChangeId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="completion-link"
                     >
                         {`https://${
                             projectId.length === 15 ? "us02" : "app"
-                        }.procore.com/${projectId}/project/prime_contracts/${contractId}/change_orders/change_order_packages/${changeOrderId}`}
+                        }.procore.com/companies/${companyId}/projects/${projectId}/tools/budget_changes/${budgetChangeId}`}
                     </a>
                 )}
 
@@ -312,8 +325,8 @@ export default function UnlinkPCCO() {
                     isOpen={isModalOpen}
                     onClose={() => setModalOpen(false)}
                     onConfirm={runProcess}
-                    process={`unlink PCCO`}
-                    child={changeOrderId}
+                    process={`unlink budget change`}
+                    child={budgetChangeId}
                     parent={projectName}
                 />
             </div>

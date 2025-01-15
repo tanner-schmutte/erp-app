@@ -11,6 +11,7 @@ const externalDataRoutes = require("./routes/externalDataRoutes");
 const erpRequestDetailsRoutes = require("./routes/erpRequestDetailsRoutes");
 const logRoutes = require("./routes/logRoutes");
 const pccoRoutes = require("./routes/pccoRoutes");
+const budgetChangeRoutes = require("./routes/budgetChangeRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const userRoutes = require("./routes/userRoutes");
 
@@ -49,6 +50,7 @@ app.use("/api", externalDataRoutes);
 app.use("/api", erpRequestDetailsRoutes);
 app.use("/api", logRoutes);
 app.use("/api", pccoRoutes);
+app.use("/api", budgetChangeRoutes);
 app.use("/api", projectRoutes);
 app.use("/api", userRoutes);
 

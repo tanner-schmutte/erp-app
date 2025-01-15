@@ -41,7 +41,6 @@ export default function ShowExternalData() {
                             type="text"
                             value={companyId}
                             onChange={(e) => setCompanyId(e.target.value)}
-                            placeholder="Enter Company ID"
                             className="menu-input"
                         />
                     </div>
@@ -51,14 +50,12 @@ export default function ShowExternalData() {
                             type="text"
                             value={itemId}
                             onChange={(e) => setItemId(e.target.value)}
-                            placeholder="Enter Item ID"
                             className="menu-input"
                         />
                     </div>
                     <div className="item-name center">
                         <label>Item Type:</label>
                         <select
-                            value={itemType}
                             onChange={(e) => setItemType(e.target.value)}
                             className="menu-input"
                         >
