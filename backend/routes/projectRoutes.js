@@ -20,11 +20,17 @@ router.get("/project", async (req, res) => {
 
         res.json(response.data);
     } catch (error) {
-        console.log(error.response.status, error.response.data.message);
-
-        res.status(error.response.status).json({
-            message: error.response.data.message,
-        });
+        if (error.response) {
+            res.status(error.response.status).json({
+                message:
+                    error.response.data?.message || "Unknown error occurred",
+            });
+        } else {
+            // No response object, so it's likely a network or internal error
+            res.status(500).json({
+                message: error.message || "An unexpected error occurred",
+            });
+        }
     }
 });
 
